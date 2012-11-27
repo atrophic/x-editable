@@ -58,8 +58,18 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             }
             this.isKnockoutPowered = this.koObservable != null;
 
-            if (!this.isKnockoutPowered) {
-                //set value from settings or by element's text
+
+
+            //set value from settings or by element's text
+            if (this.isKnockoutPowered) {
+                this.value = this.input.str2value($.trim(this.koObservable()))
+
+                // subscribe to observable so that inputs can be notified
+                this.koObservable.subscribe(function(newValue) {
+                    // send updated value to input
+                    this.setvalue(newValue);
+                });
+            } else {
                 if (this.options.value === undefined || this.options.value === null) {
                     this.value = this.input.html2value($.trim(this.$element.html()));
                     isValueByText = true;
@@ -216,7 +226,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             if(this.options.disabled) {
                 return;
             }
-            //stop propagation bacause document listen any click to hide all editableContainers
+            //stop propagation because document listen any click to hide all editableContainers
             e.stopPropagation();
             this.toggle();
         },
@@ -373,7 +383,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             $('#username, #fullname').editable('validate');
             // possible result:
             {
-              username: "username is requied",
+              username: "username is required",
               fullname: "fullname should be minimum 3 letters length"
             }
             **/             
@@ -528,7 +538,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         **/          
         autotext: 'auto', 
         /**
-        Wether to return focus on element after form is closed. 
+        Whether to return focus on element after form is closed.
         This allows fully keyboard input.
 
         @property enablefocus 

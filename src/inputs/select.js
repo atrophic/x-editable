@@ -76,7 +76,7 @@ $(function(){
         // ------------- additional functions ------------
 
         onSourceReady: function (success, error) {
-            //if allready loaded just call success
+            //if already loaded just call success
             if($.isArray(this.sourceData)) {
                 success.call(this);
                 return; 
