@@ -47,12 +47,12 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             }
 
             // determine if we're knockout powered
-            if (typeof ko !== 'undefined' && ko !== null) { // knockout available
+            if (window.ko !== undefined && window.ko !== null) { // knockout available
                 var koObservableData = this.$element.data('koObservable');
-                if (typeof koObservableData !== "undefined" && koObservableData != null && ko.isObservable(koObservableData)) {
+                if (koObservableData !== undefined && koObservableData != null && window.ko.isObservable(koObservableData)) {
                     this.koObservable = koObservableData;
                 }
-                else if (typeof this.options.koObservable !== 'undefined' && this.options.koObservable !== null && ko.isObservable(this.options.koObservable)) {
+                else if (this.options.koObservable !== undefined && this.options.koObservable !== null && window.ko.isObservable(this.options.koObservable)) {
                     this.koObservable = this.options.koObservable;
                 }
             }
@@ -547,10 +547,10 @@ Makes editable any HTML element on the page. Applied as jQuery method.
     };
 
     // if knockout is available, set up the custom binding for koObservable
-    if (typeof ko !== 'undefined' && ko !== null
-        && typeof ko.bindingHandlers !== 'undefined' && ko.bindingHandlers !== null
-        && typeof ko.bindingHandlers.koObservable === 'undefined') {
-        ko.bindingHandlers.koObservable = {
+    if (typeof window.ko !== 'undefined' && window.ko !== null &&
+            typeof window.ko.bindingHandlers !== 'undefined' && window.ko.bindingHandlers !== null &&
+            typeof window.ko.bindingHandlers.koObservable === 'undefined') {
+        window.ko.bindingHandlers.koObservable = {
             init: function (domElement, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
                 return $(domElement).data('koObservable', valueAccessor());
             }
