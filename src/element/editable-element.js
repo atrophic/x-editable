@@ -40,15 +40,30 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             } else {
                 $.error('Unknown type: '+ this.options.type);
                 return; 
-            }            
-
-            //set value from settings or by element's text
-            if (this.options.value === undefined || this.options.value === null) {
-                this.value = this.input.html2value($.trim(this.$element.html()));
-                isValueByText = true;
-            } else {
-                this.value = this.input.str2value($.trim(this.options.value));
             }
+
+            // determine if we're knockout powered
+            if (typeof ko !== 'undefined' && ko !== null) { // knockout available
+                var koObservableData = this.$element.data('koObservable');
+                if (typeof koObservableData !== "undefined" && koObservableData != null && ko.isObservable(koObservableData)) {
+                    this.koObservable = koObservableData;
+                }
+                else if (typeof this.options.koObservable !== 'undefined' && this.options.koObservable !== null && ko.isObservable(this.options.koObservable)) {
+                    this.koObservable = this.options.koObservable;
+                }
+            }
+            this.isKnockoutPowered = this.koObservable != null;
+
+            if (!this.isKnockoutPowered) {
+                //set value from settings or by element's text
+                if (this.options.value === undefined || this.options.value === null) {
+                    this.value = this.input.html2value($.trim(this.$element.html()));
+                    isValueByText = true;
+                } else {
+                    this.value = this.input.str2value($.trim(this.options.value));
+                }
+            }
+            
             
             //add 'editable' class
             this.$element.addClass('editable');
@@ -292,7 +307,7 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         Sets new value of editable
         @method setValue(value, convertStr)
         @param {mixed} value new value 
-        @param {boolean} convertStr wether to convert value from string to internal format        
+        @param {boolean} convertStr whether to convert value from string to internal format
         **/         
         setValue: function(value, convertStr) {
             if(convertStr) {
@@ -511,5 +526,16 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         **/
         value: null
     };
-    
+
+    // if knockout is available, set up the custom binding for koObservable
+    if (typeof ko !== 'undefined' && ko !== null
+        && typeof ko.bindingHandlers !== 'undefined' && ko.bindingHandlers !== null
+        && typeof ko.bindingHandlers.koObservable === 'undefined') {
+        ko.bindingHandlers.koObservable = {
+            init: function (domElement, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
+                return $(domElement).data('koObservable', valueAccessor());
+            }
+        };
+    }
+
 }(window.jQuery));
