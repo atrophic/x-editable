@@ -25,7 +25,7 @@ $(function () {
     }); 
 });
 
-// usefull functions
+// useful functions
 
 function tip(e) {
     return e.data('editableContainer').tip();   
