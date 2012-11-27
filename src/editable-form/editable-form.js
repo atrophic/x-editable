@@ -358,7 +358,7 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         name: null,
         /**
         Primary key of editable object (e.g. record id in database). For composite keys use object, e.g. <code>{id: 1, lang: 'en'}</code>.
-        Can be calculated dinamically via function.
+        Can be calculated dynamically via function.
 
         @property pk 
         @type string|object|function
@@ -399,7 +399,7 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         validate: null,
         /**
         Success callback. Called when value successfully sent on server and response status = 200.
-        Can be used to process json response. If this function returns string - means error occured and string is shown as error message.
+        Can be used to process json response. If this function returns string - means error occurred and string is shown as error message.
 
         @property success 
         @type function
@@ -430,10 +430,10 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
     $.fn.editableform.buttons = '<button type="submit" class="editable-submit">ok</button>'+
     '<button type="button" class="editable-cancel">cancel</button>';      
 
-    //error class attahced to control-group
+    //error class attached to control-group
     $.fn.editableform.errorGroupClass = null;  
 
-    //error class attahced to editable-error-block
+    //error class attached to editable-error-block
     $.fn.editableform.errorBlockClass = 'editable-error';
 
     //input types
