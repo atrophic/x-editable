@@ -539,7 +539,16 @@ Makes editable any HTML element on the page. Applied as jQuery method.
         @type mixed
         @default element's text
         **/
-        value: null
+        value: null,
+
+        /**
+         Observable object that stores the value of input (both initial and continuously updated, see Knockout's MVVM approach)
+
+         @property koObservable
+         @type Observable (from Knockout.js library)
+         @default null
+         **/
+        koObservable: null
     };
 
     // if knockout is available, set up the custom binding for koObservable
