@@ -174,6 +174,13 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 return;
             } 
 
+            // if knockout powered store the current value and then overwrite the value on the view model
+            var valueBeforeSave;
+            if (typeof this.options.koObservable === 'function') {
+                valueBeforeSave = this.options.koObservable();
+                this.options.koObservable(newValue);
+            }
+
             //sending data to server
             $.when(this.save(newValueStr))
             .done($.proxy(function(response) {
@@ -182,6 +189,10 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 
                 //if it returns string --> show error
                 if(res && typeof res === 'string') {
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(valueBeforeSave);
+                    }
+
                     this.error(res);
                     this.showForm();
                     return;
@@ -190,6 +201,9 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 //if it returns object like {newValue: <something>} --> use that value
                 if(res && typeof res === 'object' && res.hasOwnProperty('newValue')) {
                     newValue = res.newValue;
+		    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(newValue);
+		    }
                 }                            
 
                 //clear error message
@@ -211,7 +225,11 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 this.$element.triggerHandler('save', {newValue: newValue, response: response});
             }, this))
             .fail($.proxy(function(xhr) {
-                this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!'); 
+                if (typeof this.options.koObservable === 'function') {
+                    this.options.koObservable(valueBeforeSave);
+                }
+
+                this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!');
                 this.showForm();  
             }, this));
         },
@@ -423,6 +441,7 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         }
         **/          
         success: function(response, newValue) {},
+
         /**
         Additional options for ajax request.
         List of values: http://api.jquery.com/jQuery.ajax
@@ -431,8 +450,17 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         @type object
         @default null
         **/        
-        ajaxOptions: null         
-    };   
+        ajaxOptions: null,
+	         
+        /**
+         Observable object that stores the value of input (both initial and continuously updated, see Knockout's MVVM approach)
+
+         @property koObservable
+         @type Observable (from Knockout.js library)
+         @default null
+         **/
+        koObservable: null
+    };
 
     /*
     Note: following params could redefined in engine: bootstrap or jqueryui:
