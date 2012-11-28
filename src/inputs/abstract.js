@@ -114,7 +114,7 @@ To create your own input you should inherit from this class.
        },
        
        /**
-        Creares input. 
+        Creates input.
         
         @method clear() 
        **/        
