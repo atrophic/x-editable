@@ -40,7 +40,7 @@ Applied as jQuery method.
                  this.containerOptions[k] = this.options[k];
               } else {
                  this.formOptions[k] = this.options[k];
-              } 
+              }
             }
         },
         

@@ -174,12 +174,23 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 return;
             } 
 
+            // if knockout powered store the current value and then overwrite the value on the view model
+            var valueBeforeSave;
+            if (typeof this.options.koObservable === 'function') {
+                valueBeforeSave = this.options.koObservable();
+                this.options.koObservable(newValue);
+            }
+
             //sending data to server
             $.when(this.save(newValueStr))
             .done($.proxy(function(response) {
                 var error;
                 //call success callback. if it returns string --> show error
                 if(error = this.options.success.call(this, response, newValue)) {
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(valueBeforeSave);
+                    }
+
                     this.error(error);
                     this.showForm();
                     return;
@@ -204,7 +215,11 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 this.$element.triggerHandler('save', {newValue: newValue, response: response});
             }, this))
             .fail($.proxy(function(xhr) {
-                this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!'); 
+                if (typeof this.options.koObservable === 'function') {
+                    this.options.koObservable(valueBeforeSave);
+                }
+
+                this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!');
                 this.showForm();  
             }, this));
         },
@@ -409,8 +424,17 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
             if(!response.success) return response.msg;
         }
         **/          
-        success: function(response, newValue) {}         
-    };   
+        success: function(response, newValue) {},
+
+        /**
+         Observable object that stores the value of input (both initial and continuously updated, see Knockout's MVVM approach)
+
+         @property koObservable
+         @type Observable (from Knockout.js library)
+         @default null
+         **/
+        koObservable: null
+    };
 
     /*
     Note: following params could redefined in engine: bootstrap or jqueryui:

@@ -54,8 +54,6 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             }
             this.isKnockoutPowered = this.koObservable != null;
 
-
-
             //set value from settings or by element's text
             if (this.isKnockoutPowered) {
                 this.value = this.input.str2value($.trim(this.koObservable()));
@@ -241,7 +239,8 @@ Makes editable any HTML element on the page. Applied as jQuery method.
             if(!this.container) {
                 var containerOptions = $.extend({}, this.options, {
                     value: this.getValue(),
-                    autohide: false //element itsef will show/hide container
+                    koObservable: this.koObservable,
+                    autohide: false //element itself will show/hide container
                 });
                 this.$element.editableContainer(containerOptions);
                 this.$element.on({
