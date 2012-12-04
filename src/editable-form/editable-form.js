@@ -70,7 +70,13 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
             $.when(this.input.render())
             .then($.proxy(function () {
                 //input
-                this.$form.find('div.editable-input').append(this.input.$input);
+                var $editableInput = this.$form.find('div.editable-input');
+                $editableInput.append(this.input.$input);
+
+                // secondary input
+                if (this.input.$secondaryInput !== undefined && this.input.$secondaryInput !== null) {
+                    $editableInput.append(this.input.$secondaryInput);
+                }
 
                 //automatically submit inputs when no buttons shown
                 if(!this.options.showbuttons) {
@@ -192,6 +198,13 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                 return;
             } 
 
+            // if knockout powered store the current value and then overwrite the value on the view model
+            var valueBeforeSave;
+            if (typeof this.options.koObservable === 'function') {
+                valueBeforeSave = this.options.koObservable();
+                this.options.koObservable(newValue);
+            }
+
             //sending data to server
             $.when(this.save(newValue))
             .done($.proxy(function(response) {
@@ -207,6 +220,10 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                 
                 //if success callback returns string -->  keep form open, show error and activate input               
                 if(typeof res === 'string') {
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(valueBeforeSave);
+                    }
+            
                     this.error(res);
                     this.showForm();
                     return;
@@ -215,6 +232,9 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                 //if success callback returns object like {newValue: <something>} --> use that value instead of submitted
                 if(res && typeof res === 'object' && res.hasOwnProperty('newValue')) {
                     newValue = res.newValue;
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(newValue);
+                    }
                 }                            
 
                 //clear error message
@@ -236,6 +256,10 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
                 this.$div.triggerHandler('save', {newValue: newValue, response: response});
             }, this))
             .fail($.proxy(function(xhr) {
+                if (typeof this.options.koObservable === 'function') {
+                    this.options.koObservable(valueBeforeSave);
+                }
+
                 this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!'); 
                 this.showForm();  
             }, this));
@@ -480,6 +504,16 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
         @since 1.1.1
         **/         
         showbuttons: true,
+    
+        /**
+         Observable object that stores the value of input (both initial and continuously updated, see Knockout's MVVM approach)
+
+         @property koObservable
+         @type Observable (from Knockout.js library)
+         @default null
+         **/
+        koObservable: null
+        
         /**
         Scope for callback methods (success, validate).  
         If <code>null</code> means editableform instance itself. 
