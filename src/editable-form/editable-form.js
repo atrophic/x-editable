@@ -67,7 +67,13 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
             $.when(this.input.render())
             .then($.proxy(function () {
                 //input
-                this.$form.find('div.editable-input').append(this.input.$input);
+                var $editableInput = this.$form.find('div.editable-input');
+                $editableInput.append(this.input.$input);
+
+                // secondary input
+                if (this.input.$secondaryInput !== undefined && this.input.$secondaryInput !== null) {
+                    $editableInput.append(this.input.$secondaryInput);
+                }
 
                 //automatically submit inputs when no buttons shown
                 if(!this.options.showbuttons) {
@@ -184,6 +190,13 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 return;
             } 
 
+            // if knockout powered store the current value and then overwrite the value on the view model
+            var valueBeforeSave;
+            if (typeof this.options.koObservable === 'function') {
+                valueBeforeSave = this.options.koObservable();
+                this.options.koObservable(newValue);
+            }
+
             //sending data to server
             $.when(this.save(newValueStr))
             .done($.proxy(function(response) {
@@ -192,6 +205,10 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 
                 //if success callback returns string --> show error
                 if(res && typeof res === 'string') {
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(valueBeforeSave);
+                    }
+            
                     this.error(res);
                     this.showForm();
                     return;
@@ -200,6 +217,9 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 //if success callback returns object like {newValue: <something>} --> use that value instead of submitted
                 if(res && typeof res === 'object' && res.hasOwnProperty('newValue')) {
                     newValue = res.newValue;
+                    if (typeof this.options.koObservable === 'function') {
+                        this.options.koObservable(newValue);
+                    }
                 }                            
 
                 //clear error message
@@ -221,6 +241,10 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
                 this.$element.triggerHandler('save', {newValue: newValue, response: response});
             }, this))
             .fail($.proxy(function(xhr) {
+                if (typeof this.options.koObservable === 'function') {
+                    this.options.koObservable(valueBeforeSave);
+                }
+
                 this.error(typeof xhr === 'string' ? xhr : xhr.responseText || xhr.statusText || 'Unknown error!'); 
                 this.showForm();  
             }, this));
@@ -433,6 +457,7 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         }
         **/          
         success: function(response, newValue) {},
+
         /**
         Additional options for ajax request.
         List of values: http://api.jquery.com/jQuery.ajax
@@ -442,6 +467,7 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         @default null
         **/        
         ajaxOptions: null,
+
         /**
         Whether to show buttons or not.
         Form without buttons can be auto-submitted by input or by onblur = 'submit'.
@@ -450,7 +476,16 @@ Editableform is linked with one of input types, e.g. 'text' or 'select'.
         @type boolean
         @default true
         **/         
-        showbuttons: true
+        showbuttons: true,
+    
+        /**
+         Observable object that stores the value of input (both initial and continuously updated, see Knockout's MVVM approach)
+
+         @property koObservable
+         @type Observable (from Knockout.js library)
+         @default null
+         **/
+        koObservable: null
         
         /*todo: 
         Submit strategy. Can be <code>normal|never</code>
