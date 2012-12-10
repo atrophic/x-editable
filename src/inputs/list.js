@@ -64,6 +64,13 @@ List - abstract class for inputs that have source option loaded from js array or
                 return;
             }
 
+            if (typeof this.options.source === 'function') {
+                this.options.sourceFunction = this.options.source;
+            }
+            if (typeof this.options.sourceFunction === "function") {
+                this.options.source = this.options.sourceFunction.call(this);
+            }
+
             //loading from url
             if (typeof this.options.source === 'string') {
                 var cacheID = this.options.source + (this.options.name ? '-' + this.options.name : ''),
