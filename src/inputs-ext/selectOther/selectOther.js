@@ -51,6 +51,7 @@
                 var textBoxIsVisible = self.$secondaryInput.is(':visible');
 
                 if (shouldShowTextBox && !textBoxIsVisible) {
+                    self.$secondaryInput.val('');
                     self.$secondaryInput.show().focus();
                 }
 
