@@ -479,6 +479,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
         }
         **/          
         success: null,
+
         /**
         Additional options for ajax request.
         List of values: http://api.jquery.com/jQuery.ajax
@@ -489,6 +490,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
         @since 1.1.1        
         **/        
         ajaxOptions: null,
+
         /**
         Whether to show buttons or not.  
         Form without buttons can be auto-submitted by input or by onblur = 'submit'.
@@ -512,7 +514,7 @@ Editableform is linked with one of input types, e.g. 'text', 'select' etc.
          @type Observable (from Knockout.js library)
          @default null
          **/
-        koObservable: null
+        koObservable: null,
         
         /**
         Scope for callback methods (success, validate).  
