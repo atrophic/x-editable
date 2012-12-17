@@ -26,7 +26,7 @@
         this.init('selectOther', options, SelectOther.defaults);
     };
 
-    $.fn.editableform.utils.inherit(SelectOther, $.fn.editableform.types.list);
+    $.fn.editableutils.inherit(SelectOther, $.fn.editabletypes.list);
 
     $.extend(SelectOther.prototype, {
 
@@ -189,20 +189,20 @@
         }
     });
 
-    SelectOther.defaults = $.extend({}, $.fn.editableform.types.list.defaults, {
+    SelectOther.defaults = $.extend({}, $.fn.editabletypes.list.defaults, {
         /**
          @property tpl
          @default <select></select>
          **/
         tpl:'<select></select>',
 
-        secondaryTpl: $.fn.editableform.types.text.defaults.tpl,
+        secondaryTpl: $.fn.editabletypes.text.defaults.tpl,
 
         secondaryInputClass: null,
 
         secondaryPlaceholder: null
     });
 
-    $.fn.editableform.types.selectOther = SelectOther;
+    $.fn.editabletypes.selectOther = SelectOther;
 
 }(window.jQuery));
